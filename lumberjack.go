@@ -223,11 +223,11 @@ func (l *Logger) openNew() error {
 	}
 
 	name := l.filename()
-	mode := os.FileMode(0600)
+	//mode := os.FileMode(0600)
 	info, err := os_Stat(name)
 	if err == nil {
 		// Copy the mode off the old logfile.
-		mode = info.Mode()
+		//mode = info.Mode()
 		// move the existing file
 		newname := backupName(name, l.LocalTime)
 		if err := os.Rename(name, newname); err != nil {
