@@ -238,14 +238,14 @@ func (l *Logger) openNew() error {
 		if err := chown(name, info); err != nil {
 			return err
 		}
-	}
 
-	os.Remove(name)
+		os.Remove(name)
+	}
 
 	// we use truncate here because this should only get called when we've moved
 	// the file ourselves. if someone else creates the file in the meantime,
 	// just wipe out the contents.
-	f, err := os.OpenFile(name, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, mode)
+	f, err := os.OpenFile(name, os.O_CREATE, 0644)
 	if err != nil {
 		return fmt.Errorf("can't open new logfile: %s", err)
 	}
