@@ -25,6 +25,7 @@ import (
 	"compress/gzip"
 	"errors"
 	"fmt"
+	"github.com/google/gopacket/layers"
 	"github.com/google/gopacket/pcapgo"
 	"io"
 	"io/ioutil"
@@ -249,6 +250,10 @@ func (l *Logger) openNew() error {
 	l.file = f
 	l.size = 0
 	l.writer = pcapgo.NewWriter(l)
+	err = l.writer.WriteFileHeader(65535, layers.LinkTypeEthernet)
+	if err != nil {
+		return fmt.Errorf("can't write file header")
+	}
 	return nil
 }
 
@@ -297,6 +302,10 @@ func (l *Logger) openExistingOrNew(writeLen int) error {
 	l.file = file
 	l.size = info.Size()
 	l.writer = pcapgo.NewWriter(l)
+	err = l.writer.WriteFileHeader(65535, layers.LinkTypeEthernet)
+	if err != nil {
+		return fmt.Errorf("can't write file header")
+	}
 
 	return nil
 }
