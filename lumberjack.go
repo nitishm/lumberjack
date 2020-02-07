@@ -250,10 +250,10 @@ func (l *Logger) openNew() error {
 	l.file = f
 	l.size = 0
 	l.writer = pcapgo.NewWriter(l)
-	err = l.writer.WriteFileHeader(65535, layers.LinkTypeEthernet)
-	if err != nil {
-		return fmt.Errorf("can't write file header")
-	}
+	//err = l.writer.WriteFileHeader(65535, layers.LinkTypeEthernet)
+	//if err != nil {
+	//	return fmt.Errorf("can't write file header")
+	//}
 	return nil
 }
 
