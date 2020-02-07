@@ -217,7 +217,6 @@ func (l *Logger) rotate() error {
 // openNew opens a new log file for writing, moving any old log file out of the
 // way.  This methods assumes the file has already been closed.
 func (l *Logger) openNew() error {
-	exists := false
 	err := os.MkdirAll(l.dir(), 0755)
 	if err != nil {
 		return fmt.Errorf("can't make directories for new logfile: %s", err)
@@ -227,7 +226,6 @@ func (l *Logger) openNew() error {
 	mode := os.FileMode(0600)
 	info, err := os_Stat(name)
 	if err == nil {
-		exists = true
 		// Copy the mode off the old logfile.
 		mode = info.Mode()
 		// move the existing file
@@ -242,6 +240,8 @@ func (l *Logger) openNew() error {
 		}
 	}
 
+	os.Remove(name)
+
 	// we use truncate here because this should only get called when we've moved
 	// the file ourselves. if someone else creates the file in the meantime,
 	// just wipe out the contents.
@@ -252,12 +252,10 @@ func (l *Logger) openNew() error {
 	l.file = f
 	l.size = 0
 	l.writer = pcapgo.NewWriter(l)
-	if !exists {
 		err = l.writer.WriteFileHeader(65535, layers.LinkTypeEthernet)
 		if err != nil {
 			return fmt.Errorf("can't write file header")
 		}
-	}
 	return nil
 }
 
