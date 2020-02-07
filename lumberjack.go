@@ -25,6 +25,7 @@ import (
 	"compress/gzip"
 	"errors"
 	"fmt"
+	"github.com/google/gopacket/pcapgo"
 	"io"
 	"io/ioutil"
 	"os"
@@ -107,6 +108,8 @@ type Logger struct {
 	// using gzip. The default is not to perform compression.
 	Compress bool `json:"compress" yaml:"compress"`
 
+	writer *pcapgo.Writer
+
 	size int64
 	file *os.File
 	mu   sync.Mutex
@@ -127,6 +130,10 @@ var (
 	// to disk.
 	megabyte = 1024 * 1024
 )
+
+func (l *Logger) GetWriter() *pcapgo.Writer {
+	return l.writer
+}
 
 // Write implements io.Writer.  If a write would cause the log file to be larger
 // than MaxSize, the file is closed, renamed to include a timestamp of the
@@ -238,6 +245,7 @@ func (l *Logger) openNew() error {
 	}
 	l.file = f
 	l.size = 0
+	l.writer = pcapgo.NewWriter(l)
 	return nil
 }
 
@@ -285,6 +293,8 @@ func (l *Logger) openExistingOrNew(writeLen int) error {
 	}
 	l.file = file
 	l.size = info.Size()
+	l.writer = pcapgo.NewWriter(l)
+
 	return nil
 }
 
